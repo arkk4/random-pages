@@ -125,19 +125,19 @@ const B0=`<path class="acc" d="M-6 0H-20"/>`+mir(s=>`<path class="hl" d="M2.8 ${
 const FM=()=>`matrix(${.866*Z} ${.5*Z} ${-.866*Z} ${.5*Z} ${cx} ${cy})`,N=16,side=i=>i<8?0:1;
 const jet=i=>`<g id="g${i}" class="${side(i)?'r':'b'}"><line class="pole" id="pl${i}"/><g id="jl${i}"><g transform="${FM()}"><g id="ps${i}"><g transform="translate(3.5 3.5)"><g id="rx${i}"><use href="#hull0" class="ext"/></g></g><g id="rb${i}"><use href="#hull0" class="hull"/>${B0}</g></g></g><text id="rt${i}" class="rt" text-anchor="middle"></text></g></g>`;
 
-/* ---- Western armament (ranges/speeds scaled to the field; gun range exaggerated for visibility) ---- */
-const WP={ir:{v:150,w:3.2,pk:.7,rg:60},      // AIM-9X Sidewinder (IR, short)
- mr:{v:170,w:2.4,pk:.6,rg:190},             // AIM-120C-7 AMRAAM (medium)
- lr:{v:190,w:2.2,pk:.65,rg:300},            // AIM-120D (long)
- arm:{v:190,w:1.6,pk:.75,rg:170},           // AGM-88E AARGM (anti-radiation)
- sl:{v:150,w:2.4,pk:.6,rg:140},             // MIM-104 Patriot PAC-3
- ss:{v:140,w:2.6,pk:.5,rg:80}};             // NASAMS / IRIS-T SLM
-const BM={g31:{br:18,dmg:40,sg:7},g12:{br:11,dmg:20,sg:10}}; // GBU-31 JDAM (Mk-84), GBU-12 Paveway II (Mk-82)
-const GUN={rg:16,burst:45,mag:510,pk:.22};                    // M61A1 Vulcan 20 mm, 510 rds, 1 hit != kill
+/* ---- Armament ---- */
+const WP={ir:{v:150,w:3.5,pk:.75,rg:65},     // AIM-9X Sidewinder (High Off-Boresight)
+ mr:{v:170,w:2.4,pk:.6,rg:190},             // AIM-120C-7 AMRAAM
+ lr:{v:190,w:2.2,pk:.65,rg:300},            // AIM-120D
+ arm:{v:190,w:1.6,pk:.75,rg:170},           // AGM-88E AARGM
+ sl:{v:150,w:2.4,pk:.6,rg:140},             // Patriot PAC-3
+ ss:{v:140,w:2.6,pk:.5,rg:80}};             // NASAMS / IRIS-T
+const BM={g31:{br:18,dmg:40,sg:7},g12:{br:11,dmg:20,sg:10}};
+const GUN={rg:42,burst:45,mag:510,pk:.28};  // M61A1 Vulcan (збільшена дальність та ефективність)
 const LOAD={CAP:{ir:2,mr:2,lr:4,arm:0,g31:0,g12:0},SEAD:{ir:2,mr:2,lr:0,arm:2,g31:0,g12:0},STR:{ir:2,mr:2,lr:0,arm:0,g31:2,g12:2}};
 const RL={CAP:'CAP',SEAD:'SEAD',STR:'STRIKE'};
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a)),cl=(v,a)=>Math.max(-a,Math.min(a,v));
-const reff=(m,z)=>m.r*(.55+.45*Math.min(1,z/90));   // low-flying jets are harder to see
+const reff=(m,z)=>m.r*(.55+.45*Math.min(1,z/90));
 const dist3=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y,(b.z-a.z)*.9);
 let AF=[],SM=[],EL=[],M=[],X=[],lure={t:0},T0=0,mid=0,JS=.85;
 const sc=[0,0],ST={sk:[0,0],ch:[0,0],h:'',f:[{},{}],hit:[0,0],lost:[0,0]},cnt=[4,4];
@@ -174,7 +174,7 @@ SM=layout().map(m=>Object.assign(m,{z:8,cd:2+R()*3,am:m.mx,emit:0,in:0,alive:1,h
 build();
 SM.forEach((m,k)=>{m.el=$('#sr'+k);m.gw=$('#sm'+k)});
 EL=J.map((_,i)=>Object.fromEntries(['g','sh','bs','w','jl','ps','rx','rb','pl','fa','co','rt'].map(n=>[n,$('#'+n+i)])));
-J.forEach((j,i)=>{Object.assign(j,{st:'g',gt:2+j.k*2.2,alive:j.on,hp:2,cm:30,gun:GUN.mag,a:{...LOAD.CAP},role:'CAP',fu:100,cd:0,gc:0,lt:0,lk:-1,tr:0,rs:0,jk:1,jt:0,kills:0,sp:0,tg:null,gate:null,rt:0});park(j);
+J.forEach((j,i)=>{Object.assign(j,{st:'g',gt:2+j.k*2.2,alive:j.on,hp:2,cm:30,gun:GUN.mag,a:{...LOAD.CAP},role:'CAP',fu:100,cd:0,gc:0,lt:0,lk:-1,tr:0,rs:0,jk:1,jt:0,kills:0,sp:0,tg:null,gate:null,rt:0,dogfight:0});park(j);
 EL[i].fa.setAttribute('d',sec(340,55));EL[i].co.setAttribute('d',sec(300,40))});
 M.length=0;X=[];sc[0]=sc[1]=0;ST.sk=[0,0];ST.ch=[0,0];ST.h='';ST.f=[{},{}];ST.hit=[0,0];ST.lost=[0,0];T0=0;lure={t:0}}
 reset();
@@ -194,7 +194,7 @@ function target(j,foes){const A2=AF[1-j.s],my=SM.filter(m=>m.alive&&m.s!==j.s);
 if(j.role==='STR')return A2.hp>0?A2:nearest(j,my,()=>1)[0];
 if(j.role==='SEAD'){const dr=j.k%2?1:-1;let b=null,bs=1e9;my.forEach(m=>{const sc=dr*m.y+.6*Math.hypot(m.x-j.x,m.y-j.y)-(m.t==='l'?60:0)+(J.some(q=>q!==j&&q.alive&&q.s===j.s&&q.role==='SEAD'&&q.tg===m)?200:0);if(sc<bs){bs=sc;b=m}});return b}
 const fr=nearest(j,J,q=>q!==j&&q.s===j.s&&q.alive&&q.st!=='g'&&q.st!=='to')[0];let b=null,bs=1e9;
-foes.forEach(e=>{const d=Math.hypot(e.x-j.x,e.y-j.y);if(d>520)return;let sc=d-(e.role==='STR'?200:e.role==='SEAD'?160:0);
+foes.forEach(e=>{const d=Math.hypot(e.x-j.x,e.y-j.y);if(d>550)return;let sc=d-(e.role==='STR'?200:e.role==='SEAD'?160:0);
 const lt=e.lk>=0?J[e.lk]:null;if(lt&&lt.s===j.s){if(lt===j)sc-=250;else if(lt===fr)sc-=200;else sc-=60}
 if(sc<bs){bs=sc;b=e}});return b}
 function route(j,t){const fw=j.s?-1:1,gx=fw*H*.45,my=SM.filter(m=>m.alive&&m.s!==j.s),a=[j.x,j.y],b=[t.x,t.y];
@@ -204,6 +204,7 @@ const rk=(p,q)=>my.reduce((s,m)=>{const r=reff(m,40)+25,d=sd(m,p,q);return d<r?s
 let best=0,bc=1e9,keep=1e9;const n=13;
 for(let i=0;i<n;i++){const g=[gx,(i/(n-1)*2-1)*.9*H],c=rk(a,g)+rk(g,b)+(Math.hypot(g[0]-a[0],g[1]-a[1])+Math.hypot(b[0]-g[0],b[1]-g[1]))/1500;if(i===j.lane)keep=c;if(c<bc){bc=c;best=i}}
 if(keep<bc*1.25+.05)best=j.lane;j.lane=best;return[gx,(best/(n-1)*2-1)*.9*H]}
+
 function step(dt){T0+=dt;lure.t-=dt;
 AF.forEach(a=>{if(a.hp<=0){a.rs-=dt;if(a.rs<=0)a.hp=35}else a.hp=Math.min(100,a.hp+1.2*dt)});
 J.forEach((j,i)=>{if(!j.on)return;const A=AF[j.s],fw=j.s?-1:1;
@@ -211,8 +212,10 @@ if(!j.alive){j.rs-=dt;if(j.rs<=0){j.alive=1;j.st='g';j.gt=6;j.lk=-1;park(j)}retu
 if(j.st==='g'){park(j);j.gt-=dt;if(j.gt<=0&&A.hp>0){j.role=pick(j);j.a={...LOAD[j.role]};j.gun=GUN.mag;j.cm=30;j.fu=100;j.hp=2;j.cd=2;j.x=A.x-fw*44*SCL;j.y=(j.k-3.5)*3;j.sp=30*VS;j.st='to'}return}
 if(j.st==='to'){j.sp+=22*VS*dt;j.x+=fw*j.sp*dt;if(j.sp>58*VS)j.z+=32*dt;if(j.z>45)j.st='f';return}
 j.fu-=1.4*dt;if(j.fu<=0){hurt(j,9,1-j.s,null);return}
-const home=Math.hypot(A.x-j.x,A.y-j.y),E=AF[1-j.s],ar=j.a;
-if(j.st==='f'&&(j.fu<12+.022*home||(j.role==='CAP'&&ar.ir+ar.mr+ar.lr==0&&j.gun<60)||(j.role==='SEAD'&&ar.arm==0)||(j.role==='STR'&&ar.g31+ar.g12==0)))j.st='l';
+const home=Math.hypot(A.x-j.x,A.y-j.y),ar=j.a,noMissiles=(ar.ir+ar.mr+ar.lr===0);
+
+/* Повернення на базу (RTB) при вичерпанні БК або палива */
+if(j.st==='f'&&(j.fu<14+.022*home||(j.role==='CAP'&&noMissiles&&(j.fu<36||j.dogfight>18))||(j.role==='SEAD'&&ar.arm==0)||(j.role==='STR'&&ar.g31+ar.g12==0)))j.st='l';
 let w,zt=80,v=(62+(110-j.z)*.3)*VS;
 const foes=J.filter(e=>e.s!==j.s&&e.alive&&e.st!=='g'&&e.st!=='to'&&e.z>12);
 const okT=t=>t&&(t.af?t.hp>0:t.air?t.alive&&t.st!=='g'&&t.z>12:t.alive);
@@ -220,33 +223,74 @@ if(j.st==='l'){j.tg=null;w=Math.atan2(A.y-j.y,A.x-j.x);zt=Math.min(80,home*.4);i
  if(home<30&&j.z<14&&A.hp>0){j.st='g';j.gt=7;j.lk=-1;return}
  if(home<40&&A.hp<=0)w+=.8}
 else{
- if(!okT(j.tg)||(j.rt-=dt)<=0){j.rt=1.2;j.tg=target(j,foes);j.gate=j.role==='STR'&&j.tg?route(j,j.tg):null}
+ if(!okT(j.tg)||(j.rt-=dt)<=0){j.rt=1.0;j.tg=target(j,foes);j.gate=j.role==='STR'&&j.tg?route(j,j.tg):null}
  const t=j.tg;let gx,gy;
- if(t){gx=t.x;gy=t.y;zt=j.role==='STR'?40:j.role==='SEAD'?95:Math.max(35,Math.min(125,t.z+(j.z>t.z?12:-8)));
-  if(t.air){gx+=Math.cos(t.h)*20;gy+=Math.sin(t.h)*20}
-  const d=Math.hypot(t.x-j.x,t.y-j.y),fc=Math.abs(wrap(Math.atan2(t.y-j.y,t.x-j.x)-j.h));
+ if(t){
+  const d=Math.hypot(t.x-j.x,t.y-j.y);
+  gx=t.x;gy=t.y;
+  if(t.air){
+    j.dogfight=(j.dogfight||0)+dt;
+    // BFM: Розрив компланарного кола за допомогою Yo-Yo та scissors
+    if(d<140){
+      // Зрізання кута (Lead/Lag pursuit): при наближенні спрямовуємо ніс прямо на ціль
+      const leadMult = d<70?4:12;
+      gx+=Math.cos(t.h)*leadMult;gy+=Math.sin(t.h)*leadMult;
+      // High/Low Yo-Yo: чергування висоти для обміну енергії на кут розвороту
+      const yoyo=(Math.sin(T0*1.4+j.k*3.1)+1)*.5;
+      zt=j.k%2===0 ? (35+yoyo*65) : (100-yoyo*65);
+    }else{
+      gx+=Math.cos(t.h)*18;gy+=Math.sin(t.h)*18;
+      zt=Math.max(35,Math.min(125,t.z+(j.z>t.z?12:-8)));
+    }
+  }else{
+    j.dogfight=0;
+    zt=j.role==='STR'?40:j.role==='SEAD'?95:Math.max(35,Math.min(125,t.z+(j.z>t.z?12:-8)));
+  }
+  const fc=Math.abs(wrap(Math.atan2(t.y-j.y,t.x-j.x)-j.h));
   if(j.role==='STR'&&j.cd<=0&&d<85&&fc<.5){const ty=t.af?(ar.g31?'g31':'g12'):(ar.g12?'g12':'g31');if(ar[ty]>0){ar[ty]--;bomb(j,t,ty);j.cd=1.2}}
   if(j.role==='SEAD'&&ar.arm>0&&j.cd<=0&&d<WP.arm.rg*.95&&fc<.45){ar.arm--;fire(j,t,'arm','r');j.cd=3}}
- else{gx=-fw*H*.2;gy=H*.45*Math.sin(T0*.15+j.k*1.7)}
+ else{j.dogfight=0;gx=-fw*H*.2;gy=H*.45*Math.sin(T0*.15+j.k*1.7)}
  if(j.gate&&fw*(j.x-j.gate[0])<0){gx=j.gate[0];gy=j.gate[1]}
  let vx=gx-j.x,vy=gy-j.y;const l=Math.hypot(vx,vy)||1;vx/=l;vy/=l;
- SM.forEach(m=>{if(!m.alive||m.s===j.s)return;const d=Math.hypot(j.x-m.x,j.y-m.y),Rr=reff(m,j.z)+(j.role==='CAP'?10:j.role==='SEAD'?22:28);if(d<Rr){const k=(Rr-d)/Rr*3+1;vx+=(j.x-m.x)/d*k;vy+=(j.y-m.y)/d*k}});
+ // Поведінка біля ППО: під час активного догфайту літак не панікує перед крайніми межами
+ SM.forEach(m=>{if(!m.alive||m.s===j.s)return;const d=Math.hypot(j.x-m.x,j.y-m.y),Rr=reff(m,j.z)+(j.role==='CAP'?6:j.role==='SEAD'?22:28);if(d<Rr){const k=(Rr-d)/Rr*2.2+1;vx+=(j.x-m.x)/d*k;vy+=(j.y-m.y)/d*k}});
  w=Math.atan2(vy,vx);
  if(lure.t>0&&j.role==='CAP')w=Math.atan2(lure.y-j.y,lure.x-j.x)}
+
+/* Захисні маневри при захопленні ворогом (не зациклює в коло) */
 const at=J.find(e=>e.alive&&e.s!==j.s&&e.lk===i);
-if(at){j.jt-=dt;if(j.jt<=0){j.jk=-j.jk;j.jt=1.3}w=Math.atan2(j.y-at.y,j.x-at.x)+j.jk*1.4;zt=38}
+if(at){
+  j.jt-=dt;
+  if(j.jt<=0){j.jk=-j.jk;j.jt=1.1+R()*0.8}
+  const d_at=Math.hypot(j.x-at.x,j.y-at.y);
+  // Якщо ворог занадто близько на хвості — ламаємо траєкторію (break turn / scissors)
+  if(d_at<110){
+    w=at.h + j.jk*1.65; // різкий відворот поперек курсу нападника, змушуючи його до overshoot
+    zt=j.z>60?35:85;
+  }else{
+    w=Math.atan2(j.y-at.y,j.x-at.x)+j.jk*1.15;
+    zt=45;
+  }
+}
 const inc=M.find(m=>m.tg===j&&Math.hypot(m.x-j.x,m.y-j.y)<110);if(inc){w=inc.h+j.jk*Math.PI/2;zt=30}
 if(Math.max(Math.abs(j.x),Math.abs(j.y))>H*.94)w=Math.atan2(-j.y,-j.x);
-j.h+=cl(wrap(w-j.h),1.1*dt);j.z+=cl(zt-j.z,32*dt);
+j.h+=cl(wrap(w-j.h),(j.dogfight>0?1.35:1.1)*dt);j.z+=cl(zt-j.z,36*dt);
 j.x+=Math.cos(j.h)*v*dt;j.y+=Math.sin(j.h)*v*dt});
 
+/* Захоплення цілей, стрільба з гармати та пуски ракет */
 J.forEach((j,i)=>{if(!j.on||!j.alive||j.st==='g'||j.st==='to')return;j.cd-=dt;j.gc-=dt;let best=-1,bd=1e9,bs=1e9;j.tr=0;
 J.forEach((e,n)=>{if(e.s===j.s||!e.alive||e.st==='g'||e.z<12)return;const dx=e.x-j.x,dy=e.y-j.y,d=dist3(j,e),off=Math.acos(Math.max(-1,Math.min(1,(dx*Math.cos(j.h)+dy*Math.sin(j.h))/d)))/D;
-if(d<340&&off<55)j.tr=1;if(d<300&&off<40&&d-(e===j.tg?1000:0)<bs){bs=d-(e===j.tg?1000:0);bd=d;best=n}});
+if(d<340&&off<55)j.tr=1;
+// HOBS (High Off-Boresight): для ближнього бою з AIM-9X дозволено захоплення під ширшим кутом (до 65°)
+const maxLockOff=(d<110&&j.a.ir>0)?65:42;
+if(d<300&&off<maxLockOff&&d-(e===j.tg?1000:0)<bs){bs=d-(e===j.tg?1000:0);bd=d;best=n}});
 j.lk=best;j.lt=best>=0?j.lt+dt:Math.max(0,j.lt-2*dt);
 if(best<0)return;const e=J[best],off=Math.abs(wrap(Math.atan2(e.y-j.y,e.x-j.x)-j.h));
-if(bd<GUN.rg&&off<.14&&j.gun>0&&j.gc<=0){j.gun-=GUN.burst;j.gc=.5;ST.f[j.s].gun=(ST.f[j.s].gun||0)+GUN.burst;lbl(j,'M61A1');X.push({t:0,k:'t',x:j.x,y:j.y,z:j.z,x2:e.x,y2:e.y,z2:e.z});if(R()<GUN.pk)hurt(e,1,j.s,j)}
-if(j.lt>1&&j.cd<=0){const t=['ir','mr','lr'].find(t=>j.a[t]>0&&WP[t].rg*.92>=bd);if(t){j.a[t]--;fire(j,e,t,'a');j.cd=3.5;j.lt=0}}});
+// Стрільба з 20-мм гармати у віражі
+if(bd<GUN.rg&&off<.28&&j.gun>0&&j.gc<=0){j.gun-=GUN.burst;j.gc=.45;ST.f[j.s].gun=(ST.f[j.s].gun||0)+GUN.burst;lbl(j,'M61A1');X.push({t:0,k:'t',x:j.x,y:j.y,z:j.z,x2:e.x,y2:e.y,z2:e.z});if(R()<GUN.pk)hurt(e,1,j.s,j)}
+// Пуск ракет (для ближнього бою AIM-9X з HOBS швидший схід)
+const lockReq=(bd<90&&j.a.ir>0)?.6:1.0;
+if(j.lt>lockReq&&j.cd<=0){const t=['ir','mr','lr'].find(t=>j.a[t]>0&&WP[t].rg*.95>=bd);if(t){j.a[t]--;fire(j,e,t,'a');j.cd=3.0;j.lt=0}}});
 
 for(const s of SM){if(!s.alive){s.rs-=dt;if(s.rs<=0){s.alive=1;s.hp=1;s.am=s.mx}s.in=0;continue}
 s.cd-=dt;s.emit-=dt;s.in=0;s.rl+=dt;if(s.rl>14){s.rl=0;if(s.am<s.mx)s.am++}
