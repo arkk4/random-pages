@@ -10,7 +10,8 @@
   color-scheme: dark;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  /* Two-tone Zinc Dark + Accents */
+
+  /* Zinc Dark Palette */
   --bg: #09090b;
   --surface: #121215;
   --card: #18181b;
@@ -20,19 +21,94 @@
   --mut: #71717a;
   --hi: #a1a1aa;
   --ink: #f4f4f5;
+
+  /* Table Isometric */
   --top: #121215;
   --r: #0d0d10;
   --l: #09090b;
+  --num-fill: #16161a;
+  --num-stroke: #232329;
 
-  /* Jet Stealth Dark Palette */
-  --body: #333338;   /* Dark graphite matte fuselage */
-  --ext: #131316;    /* Fuselage bottom bevel & underside */
-  --ln: #18181b;     /* Deep panel seams */
+  /* SAM Colors */
+  --sam-fl: #18181b;
+  --sam-fr: #1f1f23;
+  --sam-ft: #27272a;
+
+  /* Jet Model Palette */
+  --body: #333338;
+  --ext: #131316;
+  --ln: #18181b;
 
   --blue: #38bdf8;
   --red: #fb7185;
   --fire: #f59e0b;
 }
+
+/* Zinc Light Palette */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --card: #f4f4f5;
+  --grid: #e4e4e7;
+  --edge: #d4d4d8;
+  --mid: #a1a1aa;
+  --mut: #71717a;
+  --hi: #3f3f46;
+  --ink: #09090b;
+
+  --top: #ffffff;
+  --r: #e4e4e7;
+  --l: #d4d4d8;
+  --num-fill: #f4f4f5;
+  --num-stroke: #e4e4e7;
+
+  --sam-fl: #e4e4e7;
+  --sam-fr: #d4d4d8;
+  --sam-ft: #f4f4f5;
+
+  --body: #27272a;
+  --ext: #18181b;
+  --ln: #09090b;
+
+  --blue: #0284c7;
+  --red: #e11d48;
+  --fire: #d97706;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --card: #f4f4f5;
+    --grid: #e4e4e7;
+    --edge: #d4d4d8;
+    --mid: #a1a1aa;
+    --mut: #71717a;
+    --hi: #3f3f46;
+    --ink: #09090b;
+
+    --top: #ffffff;
+    --r: #e4e4e7;
+    --l: #d4d4d8;
+    --num-fill: #f4f4f5;
+    --num-stroke: #e4e4e7;
+
+    --sam-fl: #e4e4e7;
+    --sam-fr: #d4d4d8;
+    --sam-ft: #f4f4f5;
+
+    --body: #27272a;
+    --ext: #18181b;
+    --ln: #09090b;
+
+    --blue: #0284c7;
+    --red: #e11d48;
+    --fire: #d97706;
+  }
+}
+
 *, *::before, *::after { box-sizing: inherit; }
 html, body {
   height: 100%;
@@ -41,6 +117,7 @@ html, body {
   color: var(--ink);
   font: 14px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color .2s ease, color .2s ease;
 }
 main {
   min-height: 100%;
@@ -76,8 +153,8 @@ svg {
   font: 800 132px/1 system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   letter-spacing: -0.05em;
   text-anchor: middle;
-  fill: #16161a;
-  stroke: #232329;
+  fill: var(--num-fill);
+  stroke: var(--num-stroke);
   stroke-width: 1.2px;
   user-select: none;
   pointer-events: none;
@@ -86,18 +163,18 @@ svg {
 /* Jet Model & Flight Aesthetics */
 .b { --acc: var(--blue); }
 .r { --acc: var(--red); }
-.hull { fill: var(--body); stroke: #202024; stroke-width: .65; stroke-linejoin: round; }
-.ext { fill: var(--ext); stroke: #09090b; stroke-width: .65; stroke-linejoin: round; }
-.dk { fill: #101014; stroke: #09090b; stroke-width: .3; }
+.hull { fill: var(--body); stroke: var(--edge); stroke-width: .65; stroke-linejoin: round; }
+.ext { fill: var(--ext); stroke: var(--ln); stroke-width: .65; stroke-linejoin: round; }
+.dk { fill: var(--ext); stroke: var(--ln); stroke-width: .3; }
 .hl { fill: none; stroke: rgba(255,255,255,.14); stroke-width: .5; stroke-linecap: round; }
-.cny { fill: var(--acc); fill-opacity: .78; stroke: #09090b; stroke-width: .5; }
+.cny { fill: var(--acc); fill-opacity: .78; stroke: var(--ln); stroke-width: .5; }
 .acc { stroke: var(--acc); stroke-width: 1.5; stroke-linecap: round; fill: none; }
 .pole { stroke: var(--mid); stroke-width: 1.2; stroke-linecap: round; stroke-opacity: .45; stroke-dasharray: 2 3; }
-.shd { fill: #000; fill-opacity: .42; }
+.shd { fill: #000; fill-opacity: .35; }
 .bs { fill: var(--edge); stroke: var(--ln); stroke-width: .6; }
 
 /* Radar & Weapons */
-.fan { fill: var(--acc); fill-opacity: .02; stroke: var(--acc); stroke-opacity: .35; stroke-dasharray: 3 3; stroke-width: .75; }
+.fan { fill: var(--acc); fill-opacity: .025; stroke: var(--acc); stroke-opacity: .35; stroke-dasharray: 3 3; stroke-width: .75; }
 .trk .fan { fill-opacity: .06; }
 .cone { fill: var(--acc); fill-opacity: .05; stroke: var(--acc); stroke-width: .75; }
 .lock .cone { fill-opacity: .22; }
@@ -105,9 +182,9 @@ svg {
 .sr.in { fill-opacity: .14; stroke-opacity: .9; }
 #lk line { stroke-width: 1.1; stroke-dasharray: 4 3; }
 .sam { fill: none; stroke: var(--ln); stroke-width: .7; }
-.sm .fl { fill: #18181b; }
-.sm .fr { fill: #1f1f23; }
-.sm .ft { fill: #27272a; }
+.sm .fl { fill: var(--sam-fl); }
+.sm .fr { fill: var(--sam-fr); }
+.sm .ft { fill: var(--sam-ft); }
 
 /* HUD Control Bar */
 .hud {
@@ -117,19 +194,20 @@ svg {
   justify-content: space-between;
   gap: 12px 20px;
   width: 100%;
-  max-width: 720px;
+  max-width: 740px;
   padding: 8px 14px;
   background: var(--surface);
   border: 1px solid var(--edge);
   border-radius: 10px;
   font-size: 12px;
   color: var(--mut);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
 }
 .ctl {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 .stp {
   display: inline-flex;
@@ -166,7 +244,7 @@ svg {
 }
 .fld {
   display: inline-flex;
-  background: var(--bg);
+  background: var(--card);
   padding: 2px;
   border-radius: 7px;
   border: 1px solid var(--edge);
@@ -183,9 +261,33 @@ svg {
   transition: background .15s, color .15s;
 }
 .fld button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--edge);
+  border-radius: 7px;
+  background: var(--card);
+  color: var(--mut);
+  cursor: pointer;
+  padding: 0;
+  transition: background .15s, color .15s;
+}
+.theme-btn:hover {
   background: var(--edge);
   color: var(--ink);
 }
+.sun-icon { display: none; }
+.moon-icon { display: block; }
+:root[data-theme="light"] .sun-icon { display: block; }
+:root[data-theme="light"] .moon-icon { display: none; }
+
 .st {
   display: flex;
   flex-wrap: wrap;
@@ -199,14 +301,14 @@ svg {
 .st b.b { color: var(--blue); }
 .st b.r { color: var(--red); }
 
-/* Typography & Links */
+/* Typography */
 .txt {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 6px;
-  margin-top: 4px;
+  gap: 4px;
+  margin-top: 2px;
 }
 h1 {
   margin: 0;
@@ -216,33 +318,15 @@ h1 {
   color: var(--ink);
 }
 p {
-  margin: 0 0 10px;
+  margin: 0;
   font-size: 13px;
   color: var(--mut);
 }
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border: 1px solid var(--edge);
-  border-radius: 8px;
-  background: var(--card);
-  color: var(--ink);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  transition: background .15s, border-color .15s;
-}
-.btn:hover {
-  background: var(--edge);
-  border-color: var(--mid);
-}
-button:focus-visible, .btn:focus-visible {
+button:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;
 }
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .hud { justify-content: center; }
 }
 </style>
@@ -272,6 +356,10 @@ button:focus-visible, .btn:focus-visible {
         <button data-f="260" aria-pressed="false" title="Medium field (6 SAMs)">M</button>
         <button data-f="330" aria-pressed="false" title="Large field (8 SAMs)">L</button>
       </div>
+      <button class="theme-btn" id="t-btn" aria-label="Toggle theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
     <div id="st" class="st"></div>
   </div>
@@ -279,7 +367,6 @@ button:focus-visible, .btn:focus-visible {
   <div class="txt">
     <h1>Page not found</h1>
     <p>Looks like it was shot down. Click a jet, a SAM site, or the board to intervene.</p>
-    <a class="btn" href="/">Back to home</a>
   </div>
 </main>
 
@@ -416,6 +503,18 @@ const cnt=[1,1],sync=()=>[0,1].forEach(q=>{$('#n'+q).textContent=cnt[q];document
 document.querySelectorAll('.stp button').forEach(b=>b.addEventListener('click',()=>{const q=+b.dataset.s,n=Math.max(1,Math.min(4,cnt[q]+ +b.dataset.d));if(n===cnt[q])return;
 if(n>cnt[q]){const j=J[q*4+n-1];j.on=1;j.alive=0;j.rs=0}else{const j=J[q*4+cnt[q]-1];j.on=0;j.alive=0}
 cnt[q]=n;sync();if(still)render()}));
+
+// Theme management
+const root=document.documentElement;
+const savedTheme=localStorage.getItem('theme');
+if(savedTheme){ root.setAttribute('data-theme', savedTheme); }
+$('#t-btn').addEventListener('click',()=>{
+  const isLight=root.getAttribute('data-theme')==='light' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: light)').matches);
+  const nextTheme=isLight?'dark':'light';
+  root.setAttribute('data-theme', nextTheme);
+  localStorage.setItem('theme', nextTheme);
+});
+
 sync();
 go();
 })();
